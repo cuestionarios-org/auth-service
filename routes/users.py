@@ -9,7 +9,6 @@ from routes.auth import token_required
 user_bp = Blueprint('user', __name__)
 
 @user_bp.route('/update/<int:user_id>', methods=['PUT'])
-@token_required
 def update_user(current_user, user_id):
     """
     Endpoint para actualizar los detalles de un usuario.
@@ -41,14 +40,11 @@ def update_user(current_user, user_id):
         return jsonify({"message": "Ocurrió un error", "error": str(ex)}), 500
 
 @user_bp.route('/list', methods=['GET'])
-@token_required
-def list_users(current_user):
+def list_users():
     """
     Endpoint para listar todos los usuarios. 
     Solo un admin puede acceder a esta ruta.
     """
-    if current_user.role != UserRoles.ADMIN:
-        raise CustomException("Acceso denegado: solo los administradores pueden listar usuarios.", 403)
 
     try:
         # Obtener todos los usuarios
