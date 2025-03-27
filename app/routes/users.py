@@ -1,10 +1,10 @@
 from flask import Blueprint, request, jsonify
-from extensions import db
-from models.user import User
-from services.AuthService import AuthService
-from utils.errors.CustomException import CustomException
-from models.user_roles import UserRoles
-from routes.auth import token_required
+from app.extensions import db
+from app.models.user import User
+from app.services.AuthService import AuthService
+from app.utils.errors.CustomException import CustomException
+from app.models.user_roles import UserRoles
+from app.routes.auth import token_required
 
 user_bp = Blueprint('user', __name__)
 

@@ -1,5 +1,22 @@
 # .env.dev
+FLASK_APP=app.py
 FLASK_ENV=development
 SECRET_KEY=dev_secret_key
-DATABASE_URL=sqlite:///dev.db
+# DATABASE_URL=sqlite:///instance/dev.db
 JWT_SECRET_KEY=jwt_dev_key
+
+
+# Postgres
+# AUTH_POSTGRES_HOST=postgres-auth-dev
+# AUTH_POSTGRES_HOST=172.17.0.1
+
+# Para conectarme en local con DB en contenedor
+AUTH_POSTGRES_HOST=localhost
+AUTH_POSTGRES_PORT=5464
+AUTH_POSTGRES_USER=admin
+AUTH_POSTGRES_PASSWORD=admin1234
+AUTH_POSTGRES_DB=db_auth
+
+# postgres Genrals
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=admin1234

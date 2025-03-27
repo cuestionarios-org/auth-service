@@ -1,12 +1,11 @@
 from flask import Blueprint, request, jsonify
-from extensions import db
-from models.user import User
-from services.AuthService import AuthService
+from app.models.user import User
+from app.services.AuthService import AuthService
 import jwt
 import datetime
 from functools import wraps
-from config import Config
-from utils.errors.CustomException import CustomException
+from app.config import Config
+from app.utils.errors.CustomException import CustomException
 
 
 auth_bp = Blueprint('auth', __name__)

@@ -1,6 +1,6 @@
-from extensions import db
-from models.user import User
-from utils.errors.CustomException import CustomException, ValidationError
+from app.extensions import db
+from app.models.user import User
+from app.utils.errors.CustomException import CustomException, ValidationError
 
 class AuthService:
     @classmethod

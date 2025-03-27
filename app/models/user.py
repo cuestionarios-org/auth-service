@@ -1,8 +1,8 @@
-from datetime import datetime
-from extensions import db
+from datetime import datetime, timezone
+from app.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import validates
-from models.user_roles import UserRoles
+from app.models.user_roles import UserRoles
 
 class User(db.Model):
     """
@@ -17,8 +17,17 @@ class User(db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(50), nullable=False, default=UserRoles.USUARIO)  # Roles: admin, tutor, docente, alumno, usuario
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
 
     def __init__(self, username, email, role='usuario', fullname=None):
         """
@@ -118,3 +127,7 @@ class User(db.Model):
         Representación en cadena del usuario (para depuración y registros).
         """
         return f"<User {self.username} - {self.role}>"
+
+    __table_args__ = (
+        db.UniqueConstraint('email', 'username', name='uq_user_email_username'),  # Evita duplicados
+    )

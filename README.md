@@ -1,6 +1,32 @@
 # 🛡️ Python & Flask: Autenticación con JWT (JSON Web Tokens)
 
 Este proyecto implementa un sistema de autenticación de usuarios utilizando JSON Web Tokens (JWT) con Python y Flask.
+---
+
+lo clonamos, instalamos.
+docker-compose up --build (levanta server postgress y pgadmin)
+
+pgadmin
+server: postgres-auth-dev
+port 5432
+
+usuario y clave las del yml, con eso estamos ahi.
+
+corremos el app.py
+
+y luego pdremos iniciar las migraciones
+
+estas variables asi:
+AUTH_POSTGRES_HOST=localhost
+AUTH_POSTGRES_PORT=5464
+
+flask db init
+flask db migrate -m "inicial"
+flask db upgrade
+---
+
+
+
 
 ## 🚀 Características
 

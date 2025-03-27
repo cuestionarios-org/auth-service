@@ -1,6 +1,6 @@
 from flask import jsonify
-from utils.errors.CustomException import CustomException
-from utils.logs.logger_config import setup_logging
+from app.utils.errors.CustomException import CustomException
+from app.utils.logs.logger_config import setup_logging
 import logging
 
 # Configurar logging al iniciar la aplicación
