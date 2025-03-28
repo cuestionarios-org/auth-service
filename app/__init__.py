@@ -7,17 +7,21 @@ from app.routes.users import user_bp
 from app.utils.commands.cli import init_db
 from app.utils.errors.handlers import register_error_handlers
 import os
+import subprocess
+from flask_migrate import upgrade
 
 def create_app(config_name='development'):
     app = Flask(__name__)
     app.config.from_object(config_dict[config_name])
     
-    # Intentar crear la base de datos si no existe
-    create_database_if_not_exists(app)
+    
 
     db.init_app(app)
     migrate.init_app(app, db)
 
+    # Intentar crear la base de datos si no existe
+    create_database_if_not_exists(app)
+    
     # Registra comandos personalizados
     app.cli.add_command(init_db)
 
@@ -54,3 +58,20 @@ def create_database_if_not_exists(app):
             print(f"📌 Creando la base de datos {db_name}...")
             connection.execute(text(f"CREATE DATABASE {db_name}"))
             print(f"✅ Base de datos {db_name} creada exitosamente.")
+
+            # 🔥 Ejecutar migraciones usando Flask Migrate directamente
+            print("📌 Ejecutando migraciones...")
+            with app.app_context():
+                try:
+                    upgrade()
+                    print("✅ Migraciones aplicadas correctamente.")
+                except Exception as e:
+                    print(f"❌ Error al aplicar migraciones: {e}")
+
+            # # 🔥 Ejecutar migraciones automáticamente
+            # print("📌 Ejecutando migraciones...")
+            # try:
+            #     subprocess.run(["flask", "db", "upgrade"], check=True)
+            #     print("✅ Migraciones aplicadas correctamente.")
+            # except subprocess.CalledProcessError as e:
+            #     print(f"❌ Error al aplicar migraciones: {e}")

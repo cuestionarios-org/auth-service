@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Cargar las variables de entorno desde el archivo .env
-export $(grep -v '^#' .env | xargs)
-
 echo "<<<<<<<<< ${AUTH_POSTGRES_HOST} >>>>>>>>>"
 
 
@@ -20,15 +17,4 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-
-flask init_db
-echo "Base de datos inicializada"
-
-
-# Ejecuta las migraciones de la base de datos
-flask db upgrade
-echo "Base de datos disponible"
-
-
-# Inicia la aplicación
 python app.py
