@@ -7,10 +7,12 @@ from app.routes.users import user_bp
 from app.utils.commands.cli import init_db
 from app.utils.errors.handlers import register_error_handlers
 import os
-import subprocess
 from flask_migrate import upgrade
+from app.models.user import User, UserRoles
 
 def create_app(config_name='development'):
+    print(f"📌 Iniciando ...")
+
     app = Flask(__name__)
     app.config.from_object(config_dict[config_name])
     
@@ -65,13 +67,34 @@ def create_database_if_not_exists(app):
                 try:
                     upgrade()
                     print("✅ Migraciones aplicadas correctamente.")
+                    # Insertar usuarios con cada rol
+                    print("📌 Creando usuarios predeterminados...")
+                    seed_users()
+                    print("✅ Usuarios predeterminados creados.")
                 except Exception as e:
                     print(f"❌ Error al aplicar migraciones: {e}")
+        else:
+            print(f"✅ La base de datos {db_name} ya existe.")
 
-            # # 🔥 Ejecutar migraciones automáticamente
-            # print("📌 Ejecutando migraciones...")
-            # try:
-            #     subprocess.run(["flask", "db", "upgrade"], check=True)
-            #     print("✅ Migraciones aplicadas correctamente.")
-            # except subprocess.CalledProcessError as e:
-            #     print(f"❌ Error al aplicar migraciones: {e}")
+def seed_users():
+    """Inserta usuarios con cada rol en la base de datos."""
+    users = [
+        {"username": "admin", "email": "admin@example.com", "password": "admin123", "role": UserRoles.ADMIN},
+        {"username": "tutor", "email": "tutor@example.com", "password": "tutor123", "role": UserRoles.TUTOR},
+        {"username": "docente", "email": "docente@example.com", "password": "docente123", "role": UserRoles.DOCENTE},
+        {"username": "alumno", "email": "alumno@example.com", "password": "alumno123", "role": UserRoles.ALUMNO},
+        {"username": "usuario", "email": "usuario@example.com", "password": "usuario123", "role": UserRoles.USUARIO},
+    ]
+
+    for user_data in users:
+        existing_user = User.query.filter_by(email=user_data["email"]).first()
+        if not existing_user:
+            user = User(
+                username=user_data["username"],
+                email=user_data["email"],
+                role=user_data["role"]
+            )
+            user.set_password(user_data["password"])
+            db.session.add(user)
+
+    db.session.commit()

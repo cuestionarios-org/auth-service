@@ -14,7 +14,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
     fullname = db.Column(db.String(120), nullable=True)  # Ahora es opcional
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
-    password_hash = db.Column(db.String(256), nullable=False)
+    password = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(50), nullable=False, default=UserRoles.USUARIO)  # Roles: admin, tutor, docente, alumno, usuario
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(
@@ -42,13 +42,13 @@ class User(db.Model):
         """
         Genera un hash para la contraseña proporcionada y la almacena.
         """
-        self.password_hash = generate_password_hash(password)
+        self.password = generate_password_hash(password)
 
     def check_password(self, password):
         """
         Verifica si la contraseña proporcionada coincide con el hash almacenado.
         """
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password, password)
 
     @classmethod
     def validate_role(cls, role):
