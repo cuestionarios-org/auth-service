@@ -6,7 +6,7 @@ load_dotenv()
 POSTGRES_USER = os.getenv('AUTH_POSTGRES_USER',"admin")
 POSTGRES_PASSWORD = os.getenv('AUTH_POSTGRES_PASSWORD',"admin1234")
 POSTGRES_HOST = os.getenv('AUTH_POSTGRES_HOST',"localhost")
-POSTGRES_PORT = os.getenv('AUTH_POSTGRES_PORT',"5433")
+POSTGRES_PORT = os.getenv('POSTGRES_PORT',"5432")
 POSTGRES_DB = os.getenv('AUTH_POSTGRES_DB',"competition")
 
 class Config:
