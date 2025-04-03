@@ -23,7 +23,11 @@ RUN apt-get update && apt-get install -y curl && \
     fi && \
     apt-get autoremove -yqq --purge curl && rm -rf /var/lib/apt/lists/*
 
-# Expón el puerto en el que el servicio de auth estará corriendo
-EXPOSE 5001
+
+# Definir el argumento AUTH_PORT (valor se pasa desde docker-compose)
+ARG AUTH_PORT=5011
+
+# Definirlo como variable de entorno
+ENV PORT=$AUTH_PORT
 
 CMD ["/app/entrypoint.sh"]

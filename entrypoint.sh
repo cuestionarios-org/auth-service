@@ -11,10 +11,12 @@ fi
 
 
 # Espera a que PostgreSQL esté disponible
+echo "⏳ Esperando a que PostgreSQL esté listo..."
 dockerize -wait tcp://$AUTH_POSTGRES_HOST:5432 -timeout 30s
 if [ $? -ne 0 ]; then
     echo "Error: No se pudo conectar a PostgreSQL en $AUTH_POSTGRES_HOST:5432"
     exit 1
 fi
+echo "✅ PostgreSQL está listo. Iniciando servicio..."
 
 python app.py
