@@ -5,7 +5,7 @@ import jwt
 import datetime
 from functools import wraps
 from app.config import Config
-from app.utils.errors.CustomException import CustomException
+from app.utils.errors.decorators import with_context_error
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -36,29 +36,31 @@ def register():
     """
     Endpoint para registrar un nuevo usuario.
     """
+    return handle_register()
+
+@with_context_error(context="Register_AuthController")
+def handle_register():
+    
     data = request.get_json()
 
-    try:
-        new_user = AuthService.register_user(
-            username=data['username'],
-            fullname=data.get('fullname', ""),  # Maneja fullname como opcional
-            email=data['email'],
-            password=data['password'],
-        )
-        return jsonify({
-            "message": "Usuario creado con éxito",
-            "user": new_user.to_dict()
-        }), 201
-
-    except CustomException as ex:
-        return jsonify({"message": str(ex)}), 400
-
-    except Exception as ex:
-        return jsonify({"message": "An error occurred", "error": str(ex)}), 500
+    new_user = AuthService.register_user(
+        username=data['username'],
+        fullname=data.get('fullname', ""),  # Maneja fullname como opcional
+        email=data['email'],
+        password=data['password'],
+    )
+    return jsonify({
+        "message": "Usuario creado con éxito",
+        "user": new_user.to_dict()
+    }), 201
 
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
+    return handle_login()
+
+@with_context_error(context="Login_AuthController")
+def handle_login():
     """
     Endpoint para autenticar usuarios.
     """

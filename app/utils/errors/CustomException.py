@@ -48,3 +48,8 @@ class PermissionError(CustomException):
     """
     def __init__(self, message, code=403):
         super().__init__(message, code)
+
+class BusinessError(CustomException):
+    """Errores de lógica del negocio"""
+    def __init__(self, message="Error de lógica de negocio"):
+        super().__init__(message, code=409)
