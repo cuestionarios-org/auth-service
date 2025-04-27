@@ -38,3 +38,11 @@ class AuthService:
         db.session.commit()
         return user
 
+    @classmethod
+    @with_context_error(context="GetUserById_AuthService")
+    @handle_db_errors(context="GetUserById_AuthService")
+    def get_user_by_id(cls, user_id):
+        user = User.query.get(user_id)
+        if not user:
+            raise ValidationError("Usuario no encontrado.")
+        return user

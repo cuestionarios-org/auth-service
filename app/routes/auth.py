@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from app.models.user import User
 from app.services.AuthService import AuthService
 import jwt
 import datetime
@@ -12,25 +11,26 @@ auth_bp = Blueprint('auth', __name__)
 
 def token_required(f):
     """
-    Decorador para verificar el token JWT.
+    Decorador para verificar el token JWT y cargar el usuario actual.
     """
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        if not token:
-            return jsonify({"message": "Token is missing!"}), 401
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return jsonify({"message": "Token no proporcionado."}), 401
 
         try:
-            token = token.split("Bearer ")[1]
-            data = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=["HS256"])
-            current_user = User.query.get(data['user_id'])
+            token = auth_header.split("Bearer ")[1]
+            payload = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=["HS256"])
+            current_user = AuthService.get_user_by_id(payload['user_id'])
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as jwt_error:
+            return jsonify({"message": "Token inválido o expirado.", "error": str(jwt_error)}), 401
         except Exception as e:
-            return jsonify({"message": "Token is invalid!", "error": str(e)}), 401
+            return jsonify({"message": "Error de autenticación.", "error": str(e)}), 401
 
         return f(current_user, *args, **kwargs)
+
     return decorated
-
-
 @auth_bp.route('/register', methods=['POST'])
 def register():
     """
@@ -79,9 +79,35 @@ def handle_login():
             Config.JWT_SECRET_KEY,
             algorithm="HS256"
         )
-        return jsonify({"access_token": token}), 200
+        # Convertir el user a dict y seleccionar solo los campos que queremos devolver
+        user_data = authenticated_user.to_dict()
+        filtered_user_data = {
+            "id": user_data["id"],
+            "username": user_data["username"],
+            "email": user_data["email"],
+            "role": user_data["role"]
+        }
+
+        return jsonify({
+            "access_token": token,
+            "user": filtered_user_data
+        }), 200
     return jsonify({"message": "Credenciales inválidas"}), 401
 
+# ruta para /me
+@auth_bp.route('/me', methods=['GET'])
+@token_required
+def me(current_user):
+    """
+    Endpoint para obtener los detalles del usuario autenticado.
+    """
+    return jsonify({
+        "id": current_user.id,
+        "username": current_user.username,
+        "fullname": current_user.fullname,
+        "email": current_user.email,
+        "role": current_user.role
+    })
 
 @auth_bp.route('/protected', methods=['GET'])
 @token_required
